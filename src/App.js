@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
-import { gql , useQuery} from '@apollo/client';
+import { gql , useQuery, NetworkStatus } from '@apollo/client';
+import AddWaiter from './AddWaiter';
 
 const query = gql`
   query FetchAllTheWaiters {
@@ -13,11 +14,21 @@ const query = gql`
 
 function App() {
 
-  const { loading, error, data} = useQuery(query)
+  const { loading, error, data , refetch, networkStatus} = useQuery(query, {
+    notifyOnNetworkStatusChange:true,
+  })
+
   if (loading) {
     return    <div className="App">
                 <header className="App-header">
                   <img src={logo} className="App-logo" alt="logo" />
+                </header>
+              </div>
+  }
+  if (networkStatus == NetworkStatus.refetch) {
+    return    <div className="App">
+                <header className="App-header">
+                  refetching....
                 </header>
               </div>
   }
@@ -35,9 +46,13 @@ function App() {
       <header className="App-header">
         {
           data.waiters.length > 0
-            ? data.waiters.map(waiter =><div>{waiter.name} -{waiter.id}</div>)
+            ? data.waiters.map(waiter =><div key={waiter.id}>{waiter.name} -  {waiter.id}</div>)
             : <p>No waiters yet</p>
         }
+      <button onClick={()=> refetch()}>
+        Fetch some more
+      </button>
+      <AddWaiter/>
       </header>
     </div>
   );
