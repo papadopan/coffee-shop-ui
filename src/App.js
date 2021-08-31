@@ -3,14 +3,21 @@ import './App.css';
 import { gql , useQuery, NetworkStatus } from '@apollo/client';
 import AddWaiter from './AddWaiter';
 
+
 const query = gql`
+  fragment PersonalData on Waiter {
+    name,
+    last
+}
   query FetchAllTheWaiters {
     waiters {
+      ...PersonalData
       id
-      name
     }
   }
 `
+
+
 
 function App() {
 
@@ -46,7 +53,7 @@ function App() {
       <header className="App-header">
         {
           data.waiters.length > 0
-            ? data.waiters.map(waiter =><div key={waiter.id}>{waiter.name} -  {waiter.id}</div>)
+            ? data.waiters.map(waiter =><div key={waiter.id}>{waiter.last}-{waiter.name} -  {waiter.id}</div>)
             : <p>No waiters yet</p>
         }
       <button onClick={()=> refetch()}>
